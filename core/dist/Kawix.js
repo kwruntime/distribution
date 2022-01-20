@@ -861,7 +861,13 @@ Comment= `;
     let kawixFolder = _path.default.join(_os.default.homedir(), "KwRuntime");
 
     if (process.getuid() == 0) {
-      if (!_fs.default.existsSync("/usr/KwRuntime")) _fs.default.mkdirSync("/usr/KwRuntime");
+      if (!_fs.default.existsSync("/usr/KwRuntime")) {
+        _fs.default.mkdirSync("/usr/KwRuntime");
+      }
+
+      if (_fs.default.existsSync(kawixFolder)) {
+        _fs.default.unlinkSync(kawixFolder);
+      }
 
       _fs.default.symlinkSync("/usr/KwRuntime", kawixFolder);
 
