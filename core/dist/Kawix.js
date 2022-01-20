@@ -253,7 +253,19 @@ class Installer {
       paths.mime = "/usr/share/mime/packages";
       paths.mimeo = "/usr/share/mime";
     } else {
-      paths.mainIcon = _path.default.join(_os.default.homedir(), ".local/share/icons");
+      let local = paths.mainIcon = _path.default.join(_os.default.homedir(), ".local");
+
+      if (_fs.default.existsSync(local)) {
+        _fs.default.mkdirSync(local);
+      }
+
+      local = _path.default.join(local, "share");
+
+      if (_fs.default.existsSync(local)) {
+        _fs.default.mkdirSync(local);
+      }
+
+      paths.mainIcon = _path.default.join(local, "icons");
 
       if (!_fs.default.existsSync(paths.mainIcon)) {
         _fs.default.mkdirSync(paths.mainIcon);
@@ -1689,7 +1701,12 @@ class Kawix {
     };
 
     let exports = getExports();
-    if (cached) this.$modCache.set(resolv.request, cached);
+
+    if (cached) {
+      if (cached) cached.cacheTime = Date.now();
+      this.$modCache.set(resolv.request, cached);
+    }
+
     return exports;
   }
 
@@ -1849,6 +1866,28 @@ class Kawix {
     }
 
     if (info.executed) {
+      var _info$module$exports;
+
+      //console.info(info.module.exports, info)
+      if ((_info$module$exports = info.module.exports) !== null && _info$module$exports !== void 0 && _info$module$exports.kawixDynamic) {
+        var _info$module$exports2, _info$module$exports3;
+
+        let time = ((_info$module$exports2 = info.module.exports) === null || _info$module$exports2 === void 0 ? void 0 : (_info$module$exports3 = _info$module$exports2.kawixDynamic) === null || _info$module$exports3 === void 0 ? void 0 : _info$module$exports3.time) || 15000;
+
+        if (Date.now() > info.cacheTime + time) {
+          // check if file is edited ...
+          let stat = _fs.default.statSync(info.filename);
+
+          if (stat.mtimeMs > info.cacheTime) {
+            this.$modCache.delete(request);
+            delete require.cache[info.filename];
+            return null;
+          } else {
+            info.cacheTime = Date.now();
+          }
+        }
+      }
+
       return {
         data: info.module.exports
       };
@@ -1958,6 +1997,7 @@ class Kawix {
       }
 
       if (result) {
+        result.cacheTime = Date.now();
         this.$modCache.set(resolv.request, result);
       }
 
