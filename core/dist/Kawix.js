@@ -1051,6 +1051,7 @@ Comment= `;
 
     if (process.getuid() == 0) {
       if (!_fs.default.existsSync("/usr/KwRuntime")) _fs.default.mkdirSync("/usr/KwRuntime");
+      if (_fs.default.existsSync(kawixFolder)) _fs.default.unlinkSync(kawixFolder);
 
       _fs.default.symlinkSync("/usr/KwRuntime", kawixFolder);
 
@@ -1319,7 +1320,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.14";
+    return "1.1.15";
   }
 
   get installer() {
@@ -2597,7 +2598,7 @@ _defineProperty(Kawix, "$binaryFiles", new Map());
 _defineProperty(Kawix, "$modulesData", new Map());
 
 _defineProperty(Kawix, "packageLoaders", {
-  "yarn": "github://kwruntime/std@1.1.13/package/yarn.ts",
+  "yarn": "github://kwruntime/std@1.1.14/package/yarn.ts",
   "pnpm": "github://kwruntime/std@69ec386/package/pnpm.ts"
 });
 
