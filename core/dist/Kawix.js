@@ -2779,9 +2779,9 @@ _defineProperty(Kawix, "$binaryFiles", new Map());
 _defineProperty(Kawix, "$modulesData", new Map());
 
 _defineProperty(Kawix, "packageLoaders", {
-  "yarn": "github://kwruntime/std@88145ce/package/yarn.ts",
+  "yarn": "github://kwruntime/std@5ddf0b9/package/yarn.ts",
   //yarn: "/home/james/projects/Kodhe/kwruntime/std/package/yarn.ts",
-  "pnpm": "github://kwruntime/std@88145ce/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
+  "pnpm": "github://kwruntime/std@5ddf0b9/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
 
 });
 
