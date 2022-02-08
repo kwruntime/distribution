@@ -613,13 +613,13 @@ Comment= `;
 
     let exe = this.$kawix.executable;
     let nodev = process.version.split(".")[0].substring(1);
-    let content = `@echo off\n"${exe.cmd}" "${exe.args.join('" "')}" %*`;
+    let content = `@echo off\r\nset NODE_SKIP_PLATFORM_CHECK=1\r\n"${exe.cmd}" "${exe.args.join('" "')}" %*`;
 
     let binFile = _path.default.join(bin, "kwrun-n" + nodev + ".cmd");
 
     _fs.default.writeFileSync(binFile, content);
 
-    content = `@echo off\n"${exe.cmd}" --http-parser-legacy "${exe.args.join('" "')}" %*`;
+    content = `@echo off\r\nset NODE_SKIP_PLATFORM_CHECK=1\r\n"${exe.cmd}" --insecure-http-parser "${exe.args.join('" "')}" %*`;
     binFile = _path.default.join(bin, "kwrun-legacy-n" + nodev + ".cmd");
 
     _fs.default.writeFileSync(binFile, content);
@@ -934,13 +934,13 @@ Comment= `;
     let exe = this.$kawix.executable;
     await this.$downloadKwcore(kwcoreFile);
     let nodev = process.version.split(".")[0].substring(1);
-    let content = `@echo off\n"${exe.cmd}" "${kwcoreCli}" %*`;
+    let content = `@echo off\r\nset NODE_SKIP_PLATFORM_CHECK=1\r\n"${exe.cmd}" "${kwcoreCli}" %*`;
 
     let binFile = _path.default.join(bin, "kwcore-n" + nodev + ".cmd");
 
     _fs.default.writeFileSync(binFile, content);
 
-    content = `@echo off\n"${exe.cmd}" --http-parser-legacy "${kwcoreCli}" %*`;
+    content = `@echo off\r\nset NODE_SKIP_PLATFORM_CHECK=1\r\n"${exe.cmd}" --insecure-http-parser "${kwcoreCli}" %*`;
     binFile = _path.default.join(bin, "kwcore-legacy-n" + nodev + ".cmd");
 
     _fs.default.writeFileSync(binFile, content);
@@ -1100,7 +1100,7 @@ Comment= `;
 
     _fs.default.chmodSync(binFile, "775");
 
-    content = `#!/usr/bin/env bash\n${exe.cmd} --http-parser-legacy "${kwcoreCli}" "$@"\nexit $?`;
+    content = `#!/usr/bin/env bash\n${exe.cmd} --insecure-http-parser "${kwcoreCli}" "$@"\nexit $?`;
     binFile = _path.default.join(bin, "kwcore-legacy-n" + nodev);
 
     _fs.default.writeFileSync(binFile, content);
@@ -1258,7 +1258,7 @@ Comment= `;
     }*/
 
 
-    content = `#!/usr/bin/env bash\n${exe.cmd} --http-parser-legacy ${exe.args.join(" ")} "$@"\nexit $?`;
+    content = `#!/usr/bin/env bash\n${exe.cmd} --insecure-http-parser ${exe.args.join(" ")} "$@"\nexit $?`;
     binFile = _path.default.join(bin, "kwrun-legacy-n" + nodev);
 
     _fs.default.writeFileSync(binFile, content);
