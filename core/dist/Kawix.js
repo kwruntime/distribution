@@ -2185,7 +2185,9 @@ class Kawix {
       if (result) {
         result.cacheTime = Date.now();
         this.$modCache.set(resolv.request, result);
-        if (result.file) this.$modCache.set(result.file, result);
+        let genname = result.vars.values[3];
+        if (genname) this.$modCache.set(genname, result);
+        if (result.filename) this.$modCache.set(result.filename, result);
       }
 
       let defs = importing.defs;
