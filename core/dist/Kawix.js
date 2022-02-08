@@ -1366,8 +1366,7 @@ class BinaryData {
     let binary = Kawix.$binaryMetadata.get(_classPrivateFieldGet(this, _filename));
 
     if (!binary) {
-      let modCache = _classPrivateFieldGet(this, _kawix).$modCache.get(_classPrivateFieldGet(this, _filename)); //console.info("Here --->", modCache)
-
+      let modCache = _classPrivateFieldGet(this, _kawix).$modCache.get(_classPrivateFieldGet(this, _filename)) || {}; //console.info("Here --->", modCache)
 
       let mod = (modCache.module || {}).exports || {}; //let mod = await this.#kawix.import(this.#filename)    
 
