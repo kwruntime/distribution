@@ -564,6 +564,15 @@ Comment= `;
       term: _path.default.join(runtimeFolder, "default_executable.dll"),
       gui: _path.default.join(runtimeFolder, "default_gui_executable.dll")
     };
+
+    if (!_fs.default.existsSync(defaultExes.term)) {
+      defaultExes.term = _path.default.join(runtimeFolder, "default_executable.code");
+    }
+
+    if (!_fs.default.existsSync(defaultExes.gui)) {
+      defaultExes.gui = _path.default.join(runtimeFolder, "default_gui_executable.code");
+    }
+
     if (!_fs.default.existsSync(defaultExes.term)) delete defaultExes.term;
     if (!_fs.default.existsSync(defaultExes.gui)) delete defaultExes.gui;
 
