@@ -467,7 +467,14 @@ Comment= `;
     }
 
     let WinReg = null;
-    WinReg = require("winreg-vbs");
+
+    try {
+      WinReg = require("winreg-vbs");
+    } catch (e) {
+      // read from npm
+      WinReg = await Kawix.import("npm://winreg-vbs@1.0.0");
+    }
+
     WinReg.createKey([...extnames, `HKCU\\SOFTWARE\\Classes\\${name}`, `HKCU\\SOFTWARE\\Classes\\${name}\\DefaultIcon`, `HKCU\\SOFTWARE\\Classes\\${name}\\Shell`, `HKCU\\SOFTWARE\\Classes\\${name}\\Shell\\open`, `HKCU\\SOFTWARE\\Classes\\${name}\\Shell\\open\\command`], function (err) {
       if (err) def.reject(err);
       def.resolve();
@@ -2021,9 +2028,11 @@ class Kawix {
     }
 
     if (request.startsWith("npm://")) {
+      let uri = new URL(request);
       return {
         from: "npm",
-        request
+        request,
+        uri
       };
     }
 
@@ -2194,8 +2203,12 @@ class Kawix {
       if (result) {
         result.cacheTime = Date.now();
         this.$modCache.set(resolv.request, result);
-        let genname = result.vars.values[3];
-        if (genname) this.$modCache.set(genname, result);
+
+        if (result.vars) {
+          let genname = result.vars.values[3];
+          if (genname) this.$modCache.set(genname, result);
+        }
+
         if (result.filename) this.$modCache.set(result.filename, result);
       }
 
@@ -2307,8 +2320,19 @@ class Kawix {
 
       conv = await this.$getNetworkContent(req);
     } else if (resolv.request.startsWith("npm://")) {
+      let uri = new URL(resolv.request);
       let name = resolv.request.substring(6);
-      let mod = await this.import(this.packageLoader, null, scope);
+      let loader = this.packageLoader;
+
+      if (uri.searchParams) {
+        let ploader = uri.searchParams.get("loader");
+
+        if (ploader) {
+          loader = Kawix.packageLoaders[ploader] || loader;
+        }
+      }
+
+      let mod = await this.import(loader, null, scope);
       let reg = new mod.Registry();
       let items = await reg.resolve(name);
       if (!(items instanceof Array)) items = [items]; //return await reg.require(name)
@@ -2317,7 +2341,8 @@ class Kawix {
         module: null,
         mode: 'npm',
         moduleLoader: reg,
-        items
+        items,
+        uri
       };
     }
 
