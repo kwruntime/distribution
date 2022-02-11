@@ -1495,6 +1495,8 @@ class Kawix {
     _defineProperty(this, "$startParams", {});
 
     _defineProperty(this, "packageLoader", Kawix.packageLoaders["pnpm"]);
+
+    _defineProperty(this, "packageLoaderEnv", {});
   }
 
   get $class() {
@@ -2334,6 +2336,10 @@ class Kawix {
 
       let mod = await this.import(loader, null, scope);
       let reg = new mod.Registry();
+
+      for (let id in this.packageLoaderEnv) {
+        reg.env[id] = this.packageLoaderEnv[id];
+      }
 
       if (uri.searchParams && reg.env) {
         for (let key of uri.searchParams.keys()) {
