@@ -1494,7 +1494,7 @@ class Kawix {
 
     _defineProperty(this, "$startParams", {});
 
-    _defineProperty(this, "packageLoader", Kawix.packageLoaders["yarn"]);
+    _defineProperty(this, "packageLoader", Kawix.packageLoaders["pnpm"]);
   }
 
   get $class() {
@@ -1506,7 +1506,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.16";
+    return "1.1.17";
   }
 
   get installer() {
@@ -2815,9 +2815,9 @@ _defineProperty(Kawix, "$binaryFiles", new Map());
 _defineProperty(Kawix, "$modulesData", new Map());
 
 _defineProperty(Kawix, "packageLoaders", {
-  "yarn": "github://kwruntime/std@5ddf0b9/package/yarn.ts",
+  "yarn": "github://kwruntime/std@09a9ea3/package/yarn.ts",
   //yarn: "/home/james/projects/Kodhe/kwruntime/std/package/yarn.ts",
-  "pnpm": "github://kwruntime/std@5ddf0b9/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
+  "pnpm": "github://kwruntime/std@09a9ea3/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
 
 });
 
