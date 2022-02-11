@@ -2321,7 +2321,7 @@ class Kawix {
       conv = await this.$getNetworkContent(req);
     } else if (resolv.request.startsWith("npm://")) {
       let uri = new URL(resolv.request);
-      let name = uri.pathname.substring(2);
+      let name = uri.username ? uri.username + "@" + uri.host + uri.pathname : uri.pathname.substring(2);
       let loader = this.packageLoader;
 
       if (uri.searchParams) {
@@ -2826,9 +2826,9 @@ _defineProperty(Kawix, "$binaryFiles", new Map());
 _defineProperty(Kawix, "$modulesData", new Map());
 
 _defineProperty(Kawix, "packageLoaders", {
-  "yarn": "github://kwruntime/std@3c114d2/package/yarn.ts",
+  "yarn": "github://kwruntime/std@34542ea/package/yarn.ts",
   //yarn: "/home/james/projects/Kodhe/kwruntime/std/package/yarn.ts",
-  "pnpm": "github://kwruntime/std@3c114d2/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
+  "pnpm": "github://kwruntime/std@34542ea/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
 
 });
 
