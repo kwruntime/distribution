@@ -656,9 +656,10 @@ Comment= `;
     if (fileinfo.length) {
       let v = fileinfo[fileinfo.length - 1].v;
       writeCmd(_path.default.join(bin, "kwrun.cmd"), _fs.default.readFileSync(_path.default.join(bin, "kwrun-n" + v + ".cmd")));
-      writeCmd(_path.default.join(bin, "kwrun-legacy.cmd"), _fs.default.readFileSync(_path.default.join(bin, "kwrun-legacy-n" + v + ".cmd")));
-      writeCmd(_path.default.join(bin, "node.cmd"), _fs.default.readFileSync(_path.default.join(bin, "node-n" + v + ".cmd"))); //Fs.writeFileSync(Path.join(bin, "kwrun.cmd"), )
-      //Fs.writeFileSync(Path.join(bin, "kwrun-legacy.cmd"), )
+      writeCmd(_path.default.join(bin, "kwrun-legacy.cmd"), _fs.default.readFileSync(_path.default.join(bin, "kwrun-legacy-n" + v + ".cmd"))); //writeCmd(Path.join(bin, "node.cmd"), Fs.readFileSync(Path.join(bin, "node-n" + v + ".cmd")))
+
+      _fs.default.writeFileSync(_path.default.join(bin, "node.cmd"), _fs.default.readFileSync(_path.default.join(bin, "node-n" + v + ".cmd"))); //Fs.writeFileSync(Path.join(bin, "kwrun-legacy.cmd"), )
+
     }
 
     await this.setExtensions({
