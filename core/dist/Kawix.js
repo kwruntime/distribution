@@ -635,6 +635,11 @@ Comment= `;
 
     _fs.default.writeFileSync(binFile, content);
 
+    content = `@echo off\r\n"${process.execPath}" %*`;
+    binFile = _path.default.join(bin, "node-n" + nodev + ".cmd");
+
+    _fs.default.writeFileSync(binFile, content);
+
     content = `@echo off\r\nset NODE_SKIP_PLATFORM_CHECK=1\r\n"${exe.cmd}" --insecure-http-parser "${exe.args.join('" "')}" %*`;
     binFile = _path.default.join(bin, "kwrun-legacy-n" + nodev + ".cmd");
 
@@ -651,7 +656,8 @@ Comment= `;
     if (fileinfo.length) {
       let v = fileinfo[fileinfo.length - 1].v;
       writeCmd(_path.default.join(bin, "kwrun.cmd"), _fs.default.readFileSync(_path.default.join(bin, "kwrun-n" + v + ".cmd")));
-      writeCmd(_path.default.join(bin, "kwrun-legacy.cmd"), _fs.default.readFileSync(_path.default.join(bin, "kwrun-legacy-n" + v + ".cmd"))); //Fs.writeFileSync(Path.join(bin, "kwrun.cmd"), )
+      writeCmd(_path.default.join(bin, "kwrun-legacy.cmd"), _fs.default.readFileSync(_path.default.join(bin, "kwrun-legacy-n" + v + ".cmd")));
+      writeCmd(_path.default.join(bin, "node.cmd"), _fs.default.readFileSync(_path.default.join(bin, "node-n" + v + ".cmd"))); //Fs.writeFileSync(Path.join(bin, "kwrun.cmd"), )
       //Fs.writeFileSync(Path.join(bin, "kwrun-legacy.cmd"), )
     }
 
