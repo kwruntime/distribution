@@ -224,6 +224,33 @@ class Installer {
     }
   }
 
+  async update() {
+    let id = parseInt(String(Date.now() / (24 * 3600000))) + ".json";
+
+    let platform = _os.default.platform();
+
+    let arch = _os.default.arch();
+
+    if (arch == "ia32") arch = "x86";
+    let pkg = await this.$kawix.import("gh+/kwruntime/core/package.json?date=" + id);
+
+    if (pkg.version != this.$kawix.version) {
+      var _info$platform;
+
+      let info = await this.$kawix.import("gh+/kwruntime/core/install.info.json?date=" + id);
+      let files = (_info$platform = info[platform]) === null || _info$platform === void 0 ? void 0 : _info$platform.files;
+
+      if (!files) {
+        console.error(`> No hay una actualización disponible para su plataforma: ${platform}-${arch}`);
+      }
+
+      console.info("> Actualizando a una nueva versión:", pkg.version);
+      files = files.filter(a => a.usage.indexOf("node") >= 0); // download files?
+    }
+
+    this.$kawix.version;
+  }
+
   $linuxGuiPaths() {
     let paths = {};
 
@@ -664,19 +691,19 @@ Comment= `;
 
     await this.setExtensions({
       type: "application/kwruntime.script",
-      description: "Script de Kawix Runtime",
+      description: "KwRuntime Script",
       extensions: [".kws", ".kw.ts", ".kwc"],
       terminal: true
     });
     await this.setExtensions({
       type: "application/kwruntime.app",
-      description: "Aplicación de Kawix Runtime",
+      description: "KwRuntime Application",
       extensions: [".kwr", ".kwb"],
       terminal: false
     });
     await this.setExtensions({
       type: "application/kwruntime.package",
-      description: "Paquete de Kawix Runtime",
+      description: "KwRuntime Package",
       extensions: [".kwt"],
       terminal: false
     });
