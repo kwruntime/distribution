@@ -94,24 +94,16 @@ kwcore.$init()
 let program = async function(){
     try{
 
+        let macArgs = []
         let openTerminalMac = function(){
             // start Terminal.app
-            let args = []
-            for(let i=0;i<process.argv.length;i++){
-                let arg = process.argv[i]
-                if(arg == "--mac" || arg == "--osx" || arg.startsWith("--mac") || arg.startsWith("--osx")){
-                }
-                else{
-                    args.push(arg)
-                }
-            }
             let uiArgs = [
                 "-e",
                 "tell application \"Terminal\"",
                 "-e",
                 "Activate",
                 "-e",
-                "do script \"" + args.join(" ") + ";exit;\\n\"",
+                "do script \"" + macArgs.join(" ") + ";exit;\\n\"",
                 "-e",
                 "end tell"
             ]
@@ -122,6 +114,18 @@ let program = async function(){
         }
 
         let useMac =  (kwcore.$startParams["mac"] !== undefined) || (kwcore.$startParams["osx"] !== undefined)
+        if(useMac){
+            for(let i=0;i<process.argv.length;i++){
+                let arg = process.argv[i]
+                if(arg == "--mac" || arg == "--osx" || arg.startsWith("--mac") || arg.startsWith("--osx")){
+                }
+                else{
+                    macArgs.push(arg)
+                }
+            }
+            process.argv = macArgs
+        }
+        
         if(kwcore.$startParams["transpiler"] == "esbuild"){
             await kwcore.$enableEsbuildTranspiler()
         }
