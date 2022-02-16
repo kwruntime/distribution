@@ -95,12 +95,12 @@ let program = async function(){
     try{
 
 
-        if(kwcore.$startParams["mac"] !== undefined){
+        if((kwcore.$startParams["mac"] !== undefined) || (kwcore.$startParams["osx"] !== undefined)){
             // start Terminal.app
             let args = []
             for(let i=0;i<process.argv.length;i++){
                 let arg = process.argv[i]
-                if(arg == "--mac" || arg.startsWith("--mac")){
+                if(arg == "--mac" || arg == "--osx" || arg.startsWith("--mac") || arg.startsWith("--osx")){
 
                 }
                 else{
