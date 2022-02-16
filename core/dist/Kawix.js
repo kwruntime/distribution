@@ -246,9 +246,8 @@ class Installer {
 
       console.info("> Actualizando a una nueva versión:", pkg.version);
       files = files.filter(a => a.usage.indexOf("node") >= 0); // download files?
-    }
+    } ///TODO
 
-    this.$kawix.version;
   }
 
   $linuxGuiPaths() {

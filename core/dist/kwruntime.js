@@ -97,7 +97,7 @@ let program = async function(){
 
         if(kwcore.$startParams["mac"] !== undefined){
             // start Terminal.app
-            let args = [process.argv[0]]
+            let args = []
             for(let i=0;i<process.argv.length;i++){
                 let arg = process.argv[i]
                 if(arg == "--mac" || arg.startsWith("--mac")){
