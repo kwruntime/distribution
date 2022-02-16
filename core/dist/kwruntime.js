@@ -100,10 +100,10 @@ let program = async function(){
             let uiArgs = [
                 "-e",
                 "tell application \"Terminal\"",
+                //"-e",
+                //"Activate",
                 "-e",
-                "Activate",
-                "-e",
-                "do script \"" + macArgs.join(" ") + ";exit;\\n\"",
+                "do script \"" + macArgs.join(" ") + ";exit;\"",
                 "-e",
                 "end tell"
             ]
@@ -125,7 +125,7 @@ let program = async function(){
             }
             process.argv = macArgs
         }
-        
+
         if(kwcore.$startParams["transpiler"] == "esbuild"){
             await kwcore.$enableEsbuildTranspiler()
         }
