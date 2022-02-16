@@ -100,8 +100,8 @@ let program = async function(){
             let uiArgs = [
                 "-e",
                 "tell application \"Terminal\"",
-                //"-e",
-                //"Activate",
+                "-e",
+                "Activate",
                 "-e",
                 "do script \"" + macArgs.join(" ") + ";exit;\"",
                 "-e",
