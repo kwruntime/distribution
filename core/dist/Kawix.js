@@ -15,6 +15,8 @@ var _path = _interopRequireDefault(require("path"));
 
 var _crypto = _interopRequireDefault(require("crypto"));
 
+var _util = _interopRequireDefault(require("util"));
+
 var _http = _interopRequireDefault(require("http"));
 
 var _https = _interopRequireDefault(require("https"));
@@ -2125,6 +2127,25 @@ class Kawix {
     }
   }
 
+  $convertToEsModule(mod) {
+    if (!mod.__esModule) {
+      // Babel need objects has __esModule property as true
+      let nm = Object.create(mod);
+      Object.defineProperty(nm, "__esModule", {
+        value: true,
+        enumerable: false
+      });
+
+      nm[_util.default.inspect.custom] = function (depth, options) {
+        return _util.default.inspect(mod, options);
+      };
+
+      return nm;
+    }
+
+    return mod;
+  }
+
   async importFromInfo(info) {
     if (info.builtin) {
       return info.exports;
@@ -2138,7 +2159,17 @@ class Kawix {
           var _info$moduleLoader;
 
           if ((_info$moduleLoader = info.moduleLoader) !== null && _info$moduleLoader !== void 0 && _info$moduleLoader.secureRequire) {
-            m = await info.moduleLoader.secureRequire(item);
+            try {
+              m = await info.moduleLoader.secureRequire(item);
+            } catch (e) {
+              // maybe using nodejs import?
+              if (e.message.indexOf("require() of ES") >= 0) {
+                m = await global["import"](item.main);
+                m = this.$convertToEsModule(m);
+              } else {
+                throw e;
+              }
+            }
           } else {
             m = require(item.main);
           }

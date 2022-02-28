@@ -69,8 +69,9 @@ require = function(name){
     return $$realRequire.apply(null, arguments)
 }
 
-
-
+try{
+    global.import = (mod)=> import(mod)
+}catch(e){}
 
 var fs = require("fs")
 var Module = require("module")
