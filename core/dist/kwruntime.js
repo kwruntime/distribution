@@ -217,15 +217,19 @@ let program = async function(){
             else{
 
                 let fname = global.kwcore.appArguments[0]
+                
                 if(fname.startsWith("http:") || fname.startsWith("https:") || fname.startsWith("gh+/")
                     || fname.startsWith("github+/") || fname.startsWith("gitlab+/") || fname.startsWith("gh+/")
                     || fname.startsWith("github://") || fname.startsWith("gitlab://")){
 
                 }
                 else if(!Path.isAbsolute(fname)){
-                    fname = Path.join(process.cwd(), fname)
-                    global.kwcore.mainFilename = fname
+                    if(!fname.startsWith("file://")){
+                        fname = Path.join(process.cwd(), fname)    
+                    }
                 }
+
+                global.kwcore.mainFilename = fname
                 let info = await global.kwcore.importInfo(fname, module, null, {
                     main: true
                 })
@@ -252,6 +256,7 @@ let program = async function(){
 }
 
 exports.kwruntime = kwcore 
+kwcore.filename = __filename
 exports.kawix = kwcore 
 exports.Kawix = Kawix 
 exports.program = exports.default = program 

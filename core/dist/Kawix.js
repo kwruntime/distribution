@@ -21,6 +21,8 @@ var _http = _interopRequireDefault(require("http"));
 
 var _https = _interopRequireDefault(require("https"));
 
+var _url = _interopRequireDefault(require("url"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
@@ -1513,6 +1515,8 @@ exports.BinaryData = BinaryData;
 
 class Kawix {
   constructor() {
+    _defineProperty(this, "$cacheType", 'json');
+
     _defineProperty(this, "appArguments", []);
 
     _defineProperty(this, "optionsArguments", []);
@@ -1675,9 +1679,15 @@ class Kawix {
   $getCache(path) {
     let md5 = _crypto.default.createHash('md5').update(path).digest("hex");
 
-    let file = _path.default.posix.join(this.$cacheFolder, md5 + ".json"),
-        stat = null,
+    let stat = null,
         data = null;
+
+    let file = _path.default.posix.join(this.$cacheFolder, md5 + ".json");
+
+    if (this.$cacheType == "javascript") {
+      md5 = _path.default.basename(path) + "-" + md5;
+      file = _path.default.posix.join(this.$cacheFolder, md5 + ".js");
+    }
 
     try {
       stat = _fs.default.statSync(path);
@@ -1686,9 +1696,26 @@ class Kawix {
     if (!stat) return null;
     if (!_fs.default.existsSync(file)) return;
 
-    let content = _fs.default.readFileSync(file, "utf8");
+    if (this.$cacheType == "javascript") {
+      /*delete require.cache[file]
+      data = require(file).default
+      */
+      let content = _fs.default.readFileSync(file, "utf8");
 
-    data = JSON.parse(content);
+      let i = content.indexOf("// KAWIX END CACHE\n");
+      data = JSON.parse(content.substring(13, i));
+      i = content.indexOf("// KAWIX RESULT CODE\n");
+      let y = content.lastIndexOf("// KAWIX RESULT CODE\n");
+
+      if (data.result) {
+        data.result.code = content.substring(i + 21, y);
+      }
+    } else {
+      let content = _fs.default.readFileSync(file, "utf8");
+
+      data = JSON.parse(content);
+    }
+
     let mtimeMs = Math.ceil(stat.mtimeMs / 1000) * 1000;
 
     if (data.mtimeMs == mtimeMs) {
@@ -1699,9 +1726,43 @@ class Kawix {
   $saveCache(path, cache) {
     let md5 = _crypto.default.createHash('md5').update(path).digest("hex");
 
-    let file = _path.default.join(this.$cacheFolder, md5 + ".json");
+    if (this.$cacheType == "javascript") {
+      md5 = _path.default.basename(path) + "-" + md5;
+      let ncache = Object.assign({}, cache);
+      let code = ncache.result.code;
 
-    _fs.default.writeFileSync(file, JSON.stringify(cache));
+      if (code) {
+        delete ncache.result.code;
+      }
+
+      let str = [];
+      str.push("var $_cache = ");
+      str.push(JSON.stringify(ncache));
+      str.push("// KAWIX END CACHE");
+      str.push("");
+      str.push("var $_func = function(){");
+      str.push("// KAWIX RESULT CODE");
+      str.push(code);
+      str.push("// KAWIX RESULT CODE");
+      str.push("}");
+      str.push("");
+      str.push(""); //str.push("var $_cache = // KAWIX RESULT JSON\n" + JSON.stringify(ncache, null, '\t') + "\n// KAWIX RESULT JSON")
+      //str.push("var $_cache = { mtimeMs: Number($_vars[0]), requires: $_vars[1].split('$$?'), filename: $_vars[2], time: Number($_vars[3]), result: {}};")
+
+      str.push("if($_cache.result){");
+      str.push("\tvar $_lines = $_func.toString().split('\\n')");
+      str.push("\t$_cache.result.code = $_lines.slice(2, $_lines.length - 2).join('\\n')");
+      str.push("}");
+      str.push("exports.default = $_cache");
+
+      let file = _path.default.join(this.$cacheFolder, md5 + ".js");
+
+      _fs.default.writeFileSync(file, str.join("\n"));
+    } else {
+      let file = _path.default.join(this.$cacheFolder, md5 + ".json");
+
+      _fs.default.writeFileSync(file, JSON.stringify(cache));
+    }
   }
 
   $addOriginalURL(file, url) {
@@ -1956,6 +2017,10 @@ class Kawix {
       return {
         request
       };
+    }
+
+    if (request.startsWith("file://")) {
+      request = _url.default.fileURLToPath(request);
     }
 
     if (!syncMode) {
@@ -2765,6 +2830,7 @@ class Kawix {
           code: result.code
         },
         requires,
+        filename,
         time: Date.now()
       }; // save cache
 
@@ -2863,6 +2929,12 @@ class Kawix {
       folder = _path.default.join(folder, "genv2");
       if (!_fs.default.existsSync(folder)) _fs.default.mkdirSync(folder);
       this.$cacheFolder = folder;
+
+      if (this.$cacheType == "javascript") {
+        this.$cacheFolder = _path.default.join(this.$mainFolder, "compiled");
+        if (!_fs.default.existsSync(this.$cacheFolder)) _fs.default.mkdirSync(this.$cacheFolder);
+      }
+
       folder = _path.default.join(folder, "network");
       if (!_fs.default.existsSync(folder)) _fs.default.mkdirSync(folder);
       this.$networkContentFolder = folder;
