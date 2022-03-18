@@ -502,7 +502,7 @@ Comment= `;
       WinReg = require("winreg-vbs");
     } catch (e) {
       // read from npm
-      WinReg = await Kawix.import("npm://winreg-vbs@1.0.0");
+      WinReg = await this.$kawix.import("npm://winreg-vbs@1.0.0");
     }
 
     WinReg.createKey([...extnames, `HKCU\\SOFTWARE\\Classes\\${name}`, `HKCU\\SOFTWARE\\Classes\\${name}\\DefaultIcon`, `HKCU\\SOFTWARE\\Classes\\${name}\\Shell`, `HKCU\\SOFTWARE\\Classes\\${name}\\Shell\\open`, `HKCU\\SOFTWARE\\Classes\\${name}\\Shell\\open\\command`], function (err) {
@@ -1547,7 +1547,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.17";
+    return "1.1.18";
   }
 
   get installer() {
@@ -1884,6 +1884,13 @@ class Kawix {
         let content = await getContent(urls[i]);
 
         _fs.default.writeFileSync(file, content);
+
+        let source = _path.default.join(_path.default.dirname(file), "sources", _path.default.basename(file));
+
+        _fs.default.writeFileSync(source, JSON.stringify({
+          file,
+          url: urls[i]
+        }));
 
         this.$addOriginalURL(file, urls[i]);
         return {
@@ -2943,6 +2950,10 @@ class Kawix {
       this.$cacheFolder = _path.default.posix.join(folder, "genv2");
       this.$networkContentFolder = _path.default.posix.join(folder, "network");
     }
+
+    let sourceFolder = _path.default.join(this.$networkContentFolder, "sources");
+
+    if (!_fs.default.existsSync(sourceFolder)) _fs.default.mkdirSync(sourceFolder);
 
     let esbuild = _path.default.join(this.$mainFolder, "esbuild.js");
 
