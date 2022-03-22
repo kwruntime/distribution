@@ -906,7 +906,7 @@ Comment= `;
 
         let filets = _path.default.join(utils, id + ".ts");
 
-        let content = `@echo off\n"${process.argv[0]}" "${process.argv[1]}" "${filets}" %*`;
+        let content = `@echo off\nset NODE_SKIP_PLATFORM_CHECK=1\n"${process.argv[0]}" "${process.argv[1]}" "${filets}" %*`;
         await _fs.default.promises.writeFile(file, content);
       }
     }
@@ -1547,7 +1547,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.18";
+    return "1.1.19";
   }
 
   get installer() {
