@@ -123,7 +123,7 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
     static get isWindows7() {
       if (_os.default.platform() == "win32") {
         let release = _os.default.release().split(".").map(Number);
-        if (release[0] < 6 || release[0] == 6 && release[1] < 1) {
+        if (release[0] < 6 || release[0] == 6 && release[1] <= 1) {
           return true;
         }
       }
@@ -7329,6 +7329,5 @@ var $$KModule = $$$createKModule($$filename).addFiles($$Files);
 $$NPMRequires = {};
 $$KModule.require("/home/james/.kawi/pnpm-packages/8dc407aa6ca7613ead990b87fecd6b97/$compiled.ts").default;
 $$KModule.$require(["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"], $$module);
-
 
 exports.Program.uiInstall()
