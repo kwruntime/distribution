@@ -130,6 +130,7 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
       return false;
     }
     static async uiInstall(lang = "en") {
+      process.stdout.setEncoding("utf8");
       if (this.isWindows7) {
         if (process.env.FROM_NIM != "1")
           process.stdout.write("c");
@@ -302,7 +303,8 @@ ${colors[33]}> ${langs[lang].installing}${colors[0]}`);
   exports.Program = Program;
   if (Program.isWindows7 && process.env.FROM_NIM == "1") {
     for (let id in colors) {
-      colors[id] = "";
+      if (id != "0")
+        colors[id] = "";
     }
   }
 };
