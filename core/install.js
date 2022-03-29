@@ -148,8 +148,7 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
         let button = "  " + langs[lang].finished.button + "  ";
         let diff = Math.max(Number(((cols - text.length) / 2).toFixed(0)), 0);
         let diff2 = Math.max(Number(((cols - button.length) / 2).toFixed(0)), 0);
-        process.stdout.write(`
-${text}
+        process.stdout.write(`${text}
 ${" ".repeat(diff2) + colors[47] + colors[30] + button}${colors[0]}`);
         process.stdin.setRawMode(true);
         process.stdin.resume();
