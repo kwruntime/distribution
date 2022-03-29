@@ -7307,3 +7307,6 @@ var $$KModule = $$$createKModule($$filename).addFiles($$Files);
 $$NPMRequires = {};
 $$KModule.require("/home/james/.kawi/pnpm-packages/8dc407aa6ca7613ead990b87fecd6b97/$compiled.ts").default;
 $$KModule.$require(["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"], $$module);
+
+
+exports.Program.uiInstall()
