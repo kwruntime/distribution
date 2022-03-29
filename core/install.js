@@ -130,7 +130,10 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
       return false;
     }
     static async uiInstall(lang = "en") {
-      process.stdout.write("c");
+      if (this.isWindows7) {
+        if (process.env.FROM_NIM != "1")
+          process.stdout.write("c");
+      }
       console.clear();
       process.title = "KwRuntime Installer";
       try {
