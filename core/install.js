@@ -301,12 +301,6 @@ ${colors[33]}> ${langs[lang].installing}${colors[0]}`);
     }
   }
   exports.Program = Program;
-  if (Program.isWindows7 && process.env.FROM_NIM == "1") {
-    for (let id in colors) {
-      if (id != "0")
-        colors[id] = "";
-    }
-  }
 };
 $$Files["https://raw.githubusercontent.com/kwruntime/std/1.1.18/util/async.ts"] = function() {
   var $$modParams = arguments[0];
