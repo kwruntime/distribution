@@ -108,7 +108,27 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
     }
   };
   exports.langs = langs;
+  const colors = {
+    "30": "[30m",
+    "31": "[31m",
+    "32": "[32m",
+    "33": "[33m",
+    "45": "[45m",
+    "46": "[46m",
+    "47": "[47m",
+    "1": "[1m",
+    "0": "[0m"
+  };
   class Program {
+    static get isWindows7() {
+      if (_os.default.platform() == "win32") {
+        let release = _os.default.release().split(".").map(Number);
+        if (release[0] < 6 || release[0] == 6 && release[1] < 1) {
+          return true;
+        }
+      }
+      return false;
+    }
     static async uiInstall(lang = "en") {
       process.stdout.write("c");
       console.clear();
@@ -117,7 +137,7 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
         this.logo(lang);
         await this.install(lang);
       } catch (e) {
-        console.error("[31m[1m" + langs[lang].onerror + ":[0m", e.message);
+        console.error(colors[31] + colors[1] + langs[lang].onerror + ":", colors[0] + e.message);
       } finally {
         let text = langs[lang].finished.text;
         let button = "  " + langs[lang].finished.button + "  ";
@@ -125,7 +145,7 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
         let diff2 = Math.max(Number(((process.stdout.columns - button.length) / 2).toFixed(0)), 0);
         process.stdout.write(`
 ${" ".repeat(diff) + text}
-${" ".repeat(diff2) + "[47m[30m" + button}[0m`);
+${" ".repeat(diff2) + colors[47] + colors[30] + button}${colors[0]}`);
         process.stdin.setRawMode(true);
         process.stdin.resume();
         process.stdin.on("data", process.exit.bind(process, 0));
@@ -148,10 +168,10 @@ ${" ".repeat(diff2) + "[47m[30m" + button}[0m`);
       const toWrite = logoWords.map((a) => a.map((b) => " ".repeat(diff) + b).join("\n"));
       console.info(`
 
-[32m[1m${toWrite.join("\n\n")}[0m
+${colors[32]}${colors[1]}${toWrite.join("\n\n")}${colors[0]}
 
 
-[33m> ${langs[lang].installing}[0m`);
+${colors[33]}> ${langs[lang].installing}${colors[0]}`);
     }
     static async install(lang = "en") {
       let kwruntimeFolder = _path.default.join(_os.default.homedir(), "KwRuntime");
@@ -203,11 +223,8 @@ ${" ".repeat(diff2) + "[47m[30m" + button}[0m`);
         if (!nodeInfo) {
           throw _exception.Exception.create(`${langs[lang].nofiles}: ${_os.default.platform}-${arch}`).putCode("UNSUPPORTED_PLATFORM");
         }
-        if (_os.default.platform() == "win32") {
-          let release = _os.default.release().split(".").map(Number);
-          if (release[0] <= 6 && release[1] <= 1) {
-            nodeInfo = nodeInfo.filter((a) => a.os == "<windows8");
-          }
+        if (this.isWindows7) {
+          nodeInfo = nodeInfo.filter((a) => a.os == "<windows8");
         }
         let installable = nodeInfo[0];
         if (!installable) {
@@ -280,6 +297,11 @@ ${" ".repeat(diff2) + "[47m[30m" + button}[0m`);
     }
   }
   exports.Program = Program;
+  if (Program.isWindows7 && process.env.FROM_NIM == "1") {
+    for (let id in colors) {
+      colors[id] = "";
+    }
+  }
 };
 $$Files["https://raw.githubusercontent.com/kwruntime/std/1.1.18/util/async.ts"] = function() {
   var $$modParams = arguments[0];
