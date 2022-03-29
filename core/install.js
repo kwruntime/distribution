@@ -143,10 +143,11 @@ $$Files["/data/projects/Kodhe/kwruntime/installer/src/mod.ts"] = function() {
       } catch (e) {
         console.error(colors[31] + colors[1] + langs[lang].onerror + ":", colors[0] + e.message);
       } finally {
+        let cols = process.stdout.columns || 0;
         let text = langs[lang].finished.text;
         let button = "  " + langs[lang].finished.button + "  ";
-        let diff = Math.max(Number(((process.stdout.columns - text.length) / 2).toFixed(0)), 0);
-        let diff2 = Math.max(Number(((process.stdout.columns - button.length) / 2).toFixed(0)), 0);
+        let diff = Math.max(Number(((cols - text.length) / 2).toFixed(0)), 0);
+        let diff2 = Math.max(Number(((cols - button.length) / 2).toFixed(0)), 0);
         process.stdout.write(`
 ${" ".repeat(diff) + text}
 ${" ".repeat(diff2) + colors[47] + colors[30] + button}${colors[0]}`);
@@ -164,10 +165,11 @@ ${" ".repeat(diff2) + colors[47] + colors[30] + button}${colors[0]}`);
  \u2591\u2588\u2500 \u2591\u2588\u2591\u2588\u2591\u2588 \u2500\u2580\u2580\u2580\u2584\u2584 \u2500\u2591\u2588\u2500\u2500 \u2591\u2588\u2584\u2584\u2588 \u2591\u2588\u2500\u2500\u2500 \u2591\u2588\u2500\u2500\u2500 \u2591\u2588\u2580\u2580\u2580 \u2591\u2588\u2584\u2584\u2580 
  \u2584\u2588\u2584 \u2591\u2588\u2500\u2500\u2580\u2588 \u2591\u2588\u2584\u2584\u2584\u2588 \u2500\u2591\u2588\u2500\u2500 \u2591\u2588\u2500\u2591\u2588 \u2591\u2588\u2584\u2584\u2588 \u2591\u2588\u2584\u2584\u2588 \u2591\u2588\u2584\u2584\u2584 \u2591\u2588\u2500\u2591\u2588`];
       let logoWords = words.map((a) => a.substring(1).split("\n"));
-      let diff = Number(((process.stdout.columns - logoWords[0][0].length) / 2).toFixed(0));
+      let cols = process.stdout.columns || 0;
+      let diff = Number(((cols - logoWords[0][0].length) / 2).toFixed(0));
       if (diff < 0) {
         logoWords = [["------------------------", "  KWRUNTIME INSTALLER   ", "------------------------"]];
-        diff = Math.max(Number(((process.stdout.columns - logoWords[0][0].length) / 2).toFixed(0)), 0);
+        diff = Math.max(Number(((cols - logoWords[0][0].length) / 2).toFixed(0)), 0);
       }
       const toWrite = logoWords.map((a) => a.map((b) => " ".repeat(diff) + b).join("\n"));
       console.info(`
