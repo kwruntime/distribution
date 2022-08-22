@@ -2171,31 +2171,39 @@ class Kawix {
     }
 
     if (info.executed) {
-      var _info$module$exports;
+      let hcache = this.$checkExports(info, request);
 
-      //console.info(info.module.exports, info)
-      if ((_info$module$exports = info.module.exports) !== null && _info$module$exports !== void 0 && _info$module$exports.kawixDynamic) {
-        var _info$module$exports2, _info$module$exports3;
-
-        let time = ((_info$module$exports2 = info.module.exports) === null || _info$module$exports2 === void 0 ? void 0 : (_info$module$exports3 = _info$module$exports2.kawixDynamic) === null || _info$module$exports3 === void 0 ? void 0 : _info$module$exports3.time) || 15000;
-
-        if (Date.now() > info.cacheTime + time) {
-          // check if file is edited ...
-          let stat = _fs.default.statSync(info.filename);
-
-          if (stat.mtimeMs > info.cacheTime) {
-            this.$modCache.delete(request);
-            delete require.cache[info.filename];
-            return null;
-          } else {
-            info.cacheTime = Date.now();
-          }
-        }
+      if (hcache) {
+        return null;
       }
 
       return {
         data: info.module.exports
       };
+    }
+  }
+
+  $checkExports(info, request) {
+    if (!info.module) return;
+    let exports = info.module.exports;
+
+    if (exports !== null && exports !== void 0 && exports.kawixDynamic) {
+      var _exports$kawixDynamic;
+
+      let time = (exports === null || exports === void 0 ? void 0 : (_exports$kawixDynamic = exports.kawixDynamic) === null || _exports$kawixDynamic === void 0 ? void 0 : _exports$kawixDynamic.time) || 15000;
+
+      if (Date.now() > info.cacheTime + time) {
+        // check if file is edited ...
+        let stat = _fs.default.statSync(info.filename);
+
+        if (stat.mtimeMs > info.cacheTime) {
+          this.$modCache.delete(request);
+          delete require.cache[info.filename];
+          return true;
+        } else {
+          info.cacheTime = Date.now();
+        }
+      }
     }
   }
 
@@ -2309,7 +2317,7 @@ class Kawix {
     let cached = this.$modCache.get(resolv.request);
 
     if (cached) {
-      return cached;
+      if (!this.$checkExports(cached, resolv.request)) return cached;
     }
 
     let item = scope.get(resolv.request);
