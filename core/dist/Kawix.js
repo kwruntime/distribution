@@ -1547,7 +1547,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.20";
+    return "1.1.21";
   }
 
   get installer() {
@@ -2168,6 +2168,12 @@ class Kawix {
           data: require(info.location.main)
         };
       }
+
+      if (info.exports) {
+        return {
+          data: info.exports
+        };
+      }
     }
 
     if (info.executed) {
@@ -2302,7 +2308,7 @@ class Kawix {
   }
 
   async importInfo(request, parent = null, scope = null, props = {}) {
-    if (_module.default.builtinModules.indexOf(request) >= 0) {
+    if (_module.default.builtinModules.indexOf(request) >= 0 || request.startsWith("node:")) {
       return {
         builtin: true,
         exports: _module.default["_load"](request, parent)
@@ -2741,7 +2747,19 @@ class Kawix {
   }
 
   async defaultExecute(info, exports) {
-    let func = Function(info.vars.names.join(","), info.result.code);
+    let code = info.result.code,
+        func;
+
+    if (info.filename) {
+      let vm = require("vm");
+
+      func = new vm.compileFunction(info.result.code, info.vars.names, {
+        filename: info.filename
+      });
+    } else {
+      func = Function(info.vars.names.join(","), info.result.code);
+    }
+
     await func.apply(func, info.vars.values);
     delete exports.__kawix__compile;
 
