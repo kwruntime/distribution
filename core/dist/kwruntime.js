@@ -232,7 +232,7 @@ let program = async function(){
                         let info = g(await global.kwcore.importInfo(name))
                         if(name.endsWith(".kwb") || name.endsWith(".kwc")){
                             try{
-                                let mod = await global.kwcore.importInfo(name)
+                                let mod = await global.kwcore.import(name)
                                 if(mod.Program && mod.Program.typeDefinition){
                                     info.filename = mod.Program.typeDefinition
                                 }
