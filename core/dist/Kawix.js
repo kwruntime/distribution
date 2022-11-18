@@ -1523,6 +1523,8 @@ class Kawix {
 
     _defineProperty(this, "customImporter", new Array());
 
+    _defineProperty(this, "customImportInfo", new Array());
+
     _defineProperty(this, "transpiler", 'babel');
 
     _defineProperty(this, "$esbuildTranspiler", null);
@@ -1549,7 +1551,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.24";
+    return "1.1.25";
   }
 
   get installer() {
@@ -2276,6 +2278,10 @@ class Kawix {
       return m;
     }
 
+    if (info.mode == "custom") {
+      return info.load();
+    }
+
     if (info.mode == "node") {
       if (info.location) {
         return require(info.location.main);
@@ -2330,6 +2336,17 @@ class Kawix {
   }
 
   async importInfo(request, parent = null, scope = null, props = {}) {
+    var _this$customImportInf;
+
+    if ((_this$customImportInf = this.customImportInfo) !== null && _this$customImportInf !== void 0 && _this$customImportInf.length) {
+      for (let importer of this.customImportInfo) {
+        try {
+          let info = await importer(request, parent);
+          if (info) return info;
+        } catch (e) {}
+      }
+    }
+
     if (_module.default.builtinModules.indexOf(request) >= 0 || request.startsWith("node:")) {
       return {
         builtin: true,
