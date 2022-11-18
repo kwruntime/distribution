@@ -1521,6 +1521,8 @@ class Kawix {
 
     _defineProperty(this, "optionsArguments", []);
 
+    _defineProperty(this, "customImporter", new Array());
+
     _defineProperty(this, "transpiler", 'babel');
 
     _defineProperty(this, "$esbuildTranspiler", null);
@@ -1547,7 +1549,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.23";
+    return "1.1.24";
   }
 
   get installer() {
@@ -2033,12 +2035,21 @@ class Kawix {
     if (!syncMode) {
       if ((request.startsWith("./") || request.startsWith("../") || request.startsWith("/")) && parent !== null && parent !== void 0 && parent.__kawix__network) {
         if (!request.startsWith("/virtual")) {
-          let newUri = new URL(request, parent.__kawix__meta.uri);
-          let url = `${newUri.protocol}//${newUri.host}${newUri.pathname}${newUri.search}`;
-          return {
-            from: "network",
-            request: url
-          };
+          let isfile = false;
+
+          if (_path.default.isAbsolute(request)) {
+            // maybe is a file 
+            isfile = _fs.default.existsSync(request);
+          }
+
+          if (!isfile) {
+            let newUri = new URL(request, parent.__kawix__meta.uri);
+            let url = `${newUri.protocol}//${newUri.host}${newUri.pathname}${newUri.search}`;
+            return {
+              from: "network",
+              request: url
+            };
+          }
         }
       }
     }
@@ -2301,6 +2312,17 @@ class Kawix {
   }
 
   async import(request, parent = null, scope = null) {
+    var _this$customImporter;
+
+    if ((_this$customImporter = this.customImporter) !== null && _this$customImporter !== void 0 && _this$customImporter.length) {
+      for (let importer of this.customImporter) {
+        try {
+          let mod = await importer(request, parent);
+          if (mod) return mod;
+        } catch (e) {}
+      }
+    }
+
     let cache = this.$getCachedExports(request);
     if (cache) return cache.data;
     let info = await this.importInfo(request, parent, scope);
