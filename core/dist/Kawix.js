@@ -1551,7 +1551,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.25";
+    return "1.1.26";
   }
 
   get installer() {
@@ -1788,6 +1788,7 @@ class Kawix {
 
     if (!ext) name += ".ts";
     if (/^\.\d+$/.test(ext)) name += ".ts";
+    if (ext == ".mjs") name += ".ts";
 
     let file = _path.default.join(this.$networkContentFolder, id + "-" + name);
 
