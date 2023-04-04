@@ -804,8 +804,15 @@ Comment= `;
                 needcheck = needcheck || (!data)
                 // get last version of npm?
                 if(needcheck){
-                    let uid = parseInt(String(Date.now()/24*3600000)).toString() + ".json"
-                    let pack = await import("https://unpkg.com/"+modname+"/package.json?date=" + uid)
+                    let uid = parseInt(String(Date.now()/24*3600000)).toString() + ".json" 
+                    let nname = modname 
+                    if(nname == 'npm'){
+                        nname += "@9.x"
+                    }
+                    else if(nname == 'pnpm'){
+                        nname += "@7.x"
+                    }
+                    let pack = await import("https://unpkg.com/"+nname+"/package.json?date=" + uid)
         
                     if(pack.version != data?.version){
         
@@ -1551,7 +1558,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.27";
+    return "1.1.28";
   }
 
   get installer() {
