@@ -1551,7 +1551,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.26";
+    return "1.1.27";
   }
 
   get installer() {
@@ -3059,7 +3059,7 @@ _defineProperty(Kawix, "$modulesData", new Map());
 _defineProperty(Kawix, "packageLoaders", {
   "yarn": "github://kwruntime/std@34542ea/package/yarn.ts",
   //yarn: "/home/james/projects/Kodhe/kwruntime/std/package/yarn.ts",
-  "pnpm": "github://kwruntime/std@34542ea/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
+  "pnpm": "github://kwruntime/std@0f85509/package/pnpm.ts" //pnpm: "/home/james/projects/Kodhe/kwruntime/std/package/pnpm.ts"
 
 });
 
