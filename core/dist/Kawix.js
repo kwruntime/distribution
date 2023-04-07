@@ -440,7 +440,7 @@ Comment= `;
     try {
       await this.$saveLinuxIcon();
     } catch (e) {
-      console.info("Warning: Failed installing icon");
+      console.info("> Warning: Failed installing icon");
     }
 
     let $paths = this.$runtimePaths();
@@ -1558,7 +1558,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.28";
+    return "1.1.29";
   }
 
   get installer() {
@@ -2014,7 +2014,11 @@ class Kawix {
     let exports = getExports();
 
     if (cached) {
-      if (cached) cached.cacheTime = Date.now();
+      if (cached) {
+        cached.cacheTime = Date.now();
+        cached.atime = Date.now();
+      }
+
       this.$modCache.set(resolv.request, cached);
     }
 
@@ -2223,7 +2227,7 @@ class Kawix {
         // check if file is edited ...
         let stat = _fs.default.statSync(info.filename);
 
-        if (stat.mtimeMs > info.cacheTime) {
+        if (stat.mtimeMs > info.atime) {
           this.$modCache.delete(request);
           delete require.cache[info.filename];
           return true;
@@ -2337,8 +2341,11 @@ class Kawix {
       }
     }
 
-    let cache = this.$getCachedExports(request);
-    if (cache) return cache.data;
+    if (!request.startsWith(".")) {
+      let cache = this.$getCachedExports(request);
+      if (cache) return cache.data;
+    }
+
     let info = await this.importInfo(request, parent, scope);
     return await this.importFromInfo(info);
   }
@@ -2401,6 +2408,7 @@ class Kawix {
 
       if (result) {
         result.cacheTime = Date.now();
+        result.atime = Date.now();
         this.$modCache.set(resolv.request, result);
 
         if (result.vars) {
