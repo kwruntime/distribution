@@ -768,6 +768,24 @@ Comment= `;
     let utils = _path.default.join(kawixFolder, "utils");
 
     if (!_fs.default.existsSync(utils)) _fs.default.mkdirSync(utils);
+    let executerContentNode = `#!/usr/bin/env node
+        var Path = require('path')
+        var Os = require('os')
+        let oargs = process.argv.slice(2)
+        process.argv = [process.argv[0], process.argv[1]]
+        var file  = Path.join(Os.homedir(), 'KwRuntime/src/kwruntime.js')
+        
+        require(file)
+        if(oargs.length){
+            for(let i=0;i<oargs.length;i++) process.argv.push(oargs[i])
+        }
+        var Runner = function(){}
+        Runner.execute = async function(modname, bin, force){
+            let mod= await global.kawix.import(__dirname + "/krun.ts")
+            return await mod.Runner.execute(modname,bin,force)
+        }
+        exports.Runner = Runner 
+        `;
     let executerContent = `#!/usr/bin/env kwrun
         import Path from 'path'
         import Os from 'os'
@@ -834,58 +852,65 @@ Comment= `;
                 if(needcheck){
                     await fs.promises.writeFile(file, JSON.stringify(data))
                 }
-                let exes = data.packageJson.bin || {}
-                if(!bin){
-                    bin = Object.keys(exes)[0]
+                
+
+                let exe = data.packageJson.bin
+                if(typeof exe == "object"){
+                    exe = exe[Object.keys(exe)[0]]
                 }
+
         
-                let cli = Path.join(data.folder, exes[bin] || exes)
+                let cli = Path.join(data.folder, exe)
                 if(!fs.existsSync(cli)){
                     cli += ".js"
                     if(!fs.existsSync(cli)){
                         return this.execute(modname, bin, true)
                     }
                 }
-                let p = Child.spawn(process.execPath, [cli, ...process.argv.slice(3)],{
+
+                let p = Child.spawn(process.execPath, [cli, ...process.argv.slice(2)],{
                     stdio:'inherit'
                 })
                 p.on("exit", (code)=> process.exit(code))
-                
-        
+                        
             }
         }
         `;
 
-    let runfile = _path.default.join(utils, "run.ts");
+    let runfile1 = _path.default.join(utils, "krun.ts");
 
-    await _fs.default.promises.writeFile(runfile, executerContent); // generate files for each 
+    await _fs.default.promises.writeFile(runfile1, executerContent);
 
-    let npm = `#!/usr/bin/env kwrun
-        import {Runner} from ${JSON.stringify(runfile)}
+    let runfile = _path.default.join(utils, "run.js");
+
+    await _fs.default.promises.writeFile(runfile, executerContentNode); // generate files for each 
+
+    let npm = `#!/usr/bin/env node
+        const {Runner} = require(${JSON.stringify(runfile)})
         Runner.execute("npm", "npm")
         `;
-    let npx = `#!/usr/bin/env kwrun
-        import {Runner} from ${JSON.stringify(runfile)}
+    let npx = `#!/usr/bin/env node
+        const {Runner} = require(${JSON.stringify(runfile)})
         Runner.execute("npm", "npx")
         `;
-    let nodegyp = `#!/usr/bin/env kwrun
-        import {Runner} from ${JSON.stringify(runfile)}
+    let nodegyp = `#!/usr/bin/env node
+        const {Runner} = require(${JSON.stringify(runfile)})
         Runner.execute("node-gyp")
         `;
-    let yarn = `#!/usr/bin/env kwrun
-        import {Runner} from ${JSON.stringify(runfile)}
+    let yarn = `#!/usr/bin/env node
+        const {Runner} = require(${JSON.stringify(runfile)})
         Runner.execute("yarn", "yarn")
         `;
-    let yarnpkg = `#!/usr/bin/env kwrun
-        import {Runner} from ${JSON.stringify(runfile)}
+    let yarnpkg = `#!/usr/bin/env node
+        const {Runner} = require(${JSON.stringify(runfile)})
         Runner.execute("yarn", "yarnpkg")
         `;
-    let pnpm = `#!/usr/bin/env kwrun
-        import {Runner} from ${JSON.stringify(runfile)}
+    let pnpm = `#!/usr/bin/env node
+        const {Runner} = require(${JSON.stringify(runfile)})
         Runner.execute("pnpm", "pnpm")
         `;
-    let pnpx = `#!/usr/bin/env kwrun
-        import {Runner} from ${JSON.stringify(runfile)}
+    let pnpx = `#!/usr/bin/env node
+        const {Runner} = require(${JSON.stringify(runfile)})
         Runner.execute("pnpm", "pnpx")
         `;
     let ext = '';
@@ -1558,7 +1583,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.29";
+    return "1.1.30";
   }
 
   get installer() {
@@ -2270,15 +2295,48 @@ class Kawix {
           var _info$moduleLoader;
 
           if ((_info$moduleLoader = info.moduleLoader) !== null && _info$moduleLoader !== void 0 && _info$moduleLoader.secureRequire) {
-            try {
-              m = await info.moduleLoader.secureRequire(item);
-            } catch (e) {
-              // maybe using nodejs import?
-              if (e.message.indexOf("require() of ES") >= 0) {
-                m = await global["import"](item.main);
-                m = this.$convertToEsModule(m);
-              } else {
-                throw e;
+            let tries = 0;
+
+            while (true) {
+              try {
+                m = await info.moduleLoader.secureRequire(item);
+                break;
+              } catch (e) {
+                // maybe using nodejs import?
+                if (e.message.indexOf("require() of ES") >= 0) {
+                  m = await global["import"](item.main);
+                  m = this.$convertToEsModule(m);
+                } else {
+                  if (e.message.indexOf("build/") >= 0 && e.code == "MODULE_NOT_FOUND") {
+                    // es nativo posiblemente
+                    tries++;
+                    if (tries > 1) throw e; // volver a ejecutar node-gyp
+
+                    console.info("> Trying build module again");
+                    console.info();
+
+                    var child = require("child_process");
+
+                    var p = child.spawn("node-gyp", ["configure"], {
+                      cwd: item.folder,
+                      stdio: 'inherit'
+                    });
+                    await new Promise(function (a, b) {
+                      p.once("error", b);
+                      p.once("exit", a);
+                    });
+                    p = child.spawn("node-gyp", ["build"], {
+                      cwd: item.folder,
+                      stdio: 'inherit'
+                    });
+                    await new Promise(function (a, b) {
+                      p.once("error", b);
+                      p.once("exit", a);
+                    });
+                  } else {
+                    throw e;
+                  }
+                }
               }
             }
           } else {
