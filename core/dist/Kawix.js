@@ -896,31 +896,31 @@ Comment= `;
 
     await _fs.default.promises.writeFile(runfile, executerContentNode); // generate files for each 
 
-    let npm = `#!/usr/bin/env node
+    let npm = `#!${process.argv[0]}
 		const {Runner} = require(${JSON.stringify(runfile)})
 		Runner.execute("npm", "npm")
 		`;
-    let npx = `#!/usr/bin/env node
+    let npx = `#!${process.argv[0]}
 		const {Runner} = require(${JSON.stringify(runfile)})
 		Runner.execute("npm", "npx")
 		`;
-    let nodegyp = `#!/usr/bin/env node
+    let nodegyp = `#!${process.argv[0]}
 		const {Runner} = require(${JSON.stringify(runfile)})
 		Runner.execute("node-gyp")
 		`;
-    let yarn = `#!/usr/bin/env node
+    let yarn = `#!${process.argv[0]}
 		const {Runner} = require(${JSON.stringify(runfile)})
 		Runner.execute("yarn", "yarn")
 		`;
-    let yarnpkg = `#!/usr/bin/env node
+    let yarnpkg = `#!${process.argv[0]}
 		const {Runner} = require(${JSON.stringify(runfile)})
 		Runner.execute("yarn", "yarnpkg")
 		`;
-    let pnpm = `#!/usr/bin/env node
+    let pnpm = `#!${process.argv[0]}
 		const {Runner} = require(${JSON.stringify(runfile)})
 		Runner.execute("pnpm", "pnpm")
 		`;
-    let pnpx = `#!/usr/bin/env node
+    let pnpx = `#!${process.argv[0]}
 		const {Runner} = require(${JSON.stringify(runfile)})
 		Runner.execute("pnpm", "pnpx")
 		`;
@@ -1594,7 +1594,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.33";
+    return "1.1.34";
   }
 
   get installer() {
