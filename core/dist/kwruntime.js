@@ -73,13 +73,13 @@ var Path = require("path")
 
 
 
-
 try{
     global.import = (mod)=> import(mod)
 }catch(e){}
 
 var fs = require("fs")
 var Module = require("module")
+
 global.Babel = require("./lib/babel.min.js")
 global.BabelPlugins = {
     dynamicImport: require("./lib/babel.dynamic.import.js").default,
@@ -271,7 +271,6 @@ exports.kawix = kwcore
 exports.Kawix = Kawix 
 exports.program = exports.default = program 
 
-
 if((process.env.ELECTRON_RUN_AS_NODE == 1) || (process.env.RUN_AS_NODE == 1)){
     // execute as normal nodejs
     process.argv.splice(1, 1)
@@ -301,6 +300,7 @@ if((process.env.ELECTRON_RUN_AS_NODE == 1) || (process.env.RUN_AS_NODE == 1)){
 else{
     exports.programTimer = setImmediate(program)
 }
+
 
 //program()
 

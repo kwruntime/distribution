@@ -440,7 +440,7 @@ Comment= `;
     try {
       await this.$saveLinuxIcon();
     } catch (e) {
-      console.info("> Warning: Failed installing icon");
+      console.info("Warning: Failed installing icon");
     }
 
     let $paths = this.$runtimePaths();
@@ -822,7 +822,7 @@ Comment= `;
                 needcheck = needcheck || (!data)
                 // get last version of npm?
                 if(needcheck){
-                    let uid = parseInt(String(Date.now()/24*3600000)).toString() + ".json" 
+                    let uid = parseInt(String(Date.now()/24*3600000)).toString() + ".json"
                     let nname = modname 
                     if(nname == 'npm'){
                         nname += "@9.x"
@@ -831,7 +831,7 @@ Comment= `;
                         nname += "@7.x"
                     }
                     let pack = await import("https://unpkg.com/"+nname+"/package.json?date=" + uid)
-        
+                    
                     if(pack.version != data?.version){
         
                         console.info("> Installing/Updating "+modname+" version:", pack.version)
@@ -852,8 +852,6 @@ Comment= `;
                 if(needcheck){
                     await fs.promises.writeFile(file, JSON.stringify(data))
                 }
-                
-
                 let exe = data.packageJson.bin
                 if(typeof exe == "object"){
                     exe = exe[Object.keys(exe)[0]]
@@ -867,12 +865,12 @@ Comment= `;
                         return this.execute(modname, bin, true)
                     }
                 }
-
                 let p = Child.spawn(process.execPath, [cli, ...process.argv.slice(2)],{
                     stdio:'inherit'
                 })
                 p.on("exit", (code)=> process.exit(code))
-                        
+                
+        
             }
         }
         `;
@@ -1583,7 +1581,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.30";
+    return "1.1.31";
   }
 
   get installer() {
@@ -2302,41 +2300,39 @@ class Kawix {
                 m = await info.moduleLoader.secureRequire(item);
                 break;
               } catch (e) {
-                // maybe using nodejs import?
-                if (e.message.indexOf("require() of ES") >= 0) {
-                  m = await global["import"](item.main);
-                  m = this.$convertToEsModule(m);
-                } else {
-                  if (e.message.indexOf("build/") >= 0 && e.code == "MODULE_NOT_FOUND") {
-                    // es nativo posiblemente
-                    tries++;
-                    if (tries > 1) throw e; // volver a ejecutar node-gyp
+                if (e.message.indexOf("build/") >= 0 && e.code == "MODULE_NOT_FOUND") {
+                  // es nativo posiblemente
+                  tries++;
+                  if (tries > 1) throw e; // volver a ejecutar node-gyp
 
-                    console.info("> Trying build module again");
-                    console.info();
+                  console.info("> Trying build module again");
+                  console.info();
 
-                    var child = require("child_process");
+                  var child = require("child_process");
 
-                    var p = child.spawn("node-gyp", ["configure"], {
-                      cwd: item.folder,
-                      stdio: 'inherit'
-                    });
-                    await new Promise(function (a, b) {
-                      p.once("error", b);
-                      p.once("exit", a);
-                    });
-                    p = child.spawn("node-gyp", ["build"], {
-                      cwd: item.folder,
-                      stdio: 'inherit'
-                    });
-                    await new Promise(function (a, b) {
-                      p.once("error", b);
-                      p.once("exit", a);
-                    });
+                  var p = child.spawn("node-gyp", ["configure"], {
+                    cwd: item.folder,
+                    stdio: 'inherit'
+                  });
+                  await new Promise(function (a, b) {
+                    p.once("error", b);
+                    p.once("exit", a);
+                  });
+                  p = child.spawn("node-gyp", ["build"], {
+                    cwd: item.folder,
+                    stdio: 'inherit'
+                  });
+                  await new Promise(function (a, b) {
+                    p.once("error", b);
+                    p.once("exit", a);
+                  });
+                } // maybe using nodejs import?
+                else if (e.message.indexOf("require() of ES") >= 0) {
+                    m = await global["import"](item.main);
+                    m = this.$convertToEsModule(m);
                   } else {
                     throw e;
                   }
-                }
               }
             }
           } else {
@@ -2641,6 +2637,8 @@ class Kawix {
     let filename = ((_conv = conv) === null || _conv === void 0 ? void 0 : _conv.file) || resolv.request;
 
     try {
+      var _mod;
+
       let module = _module.default["_cache"][filename],
           mod = null;
 
@@ -2666,7 +2664,7 @@ class Kawix {
       };
       scope.set(resolv.request, base);
 
-      if (mod.__kawix__compile) {
+      if ((_mod = mod) !== null && _mod !== void 0 && _mod.__kawix__compile) {
         meta = Object.assign(meta || {}, props);
         let result = await this.defaultCompile(module, meta, scope);
         Object.assign(base, result);
