@@ -867,7 +867,7 @@ Comment= `;
 				}
 				let exe = data.packageJson.bin
 				if(typeof exe == "object"){
-					exe = exe[Object.keys(exe)[0]]
+					exe = exe[bin] || exe[Object.keys(exe)[0]]
 				}
 
 		
@@ -1594,7 +1594,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.32";
+    return "1.1.33";
   }
 
   get installer() {
