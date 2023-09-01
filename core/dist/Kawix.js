@@ -786,7 +786,7 @@ Comment= `;
 		var Os = require('os')
 		let oargs = process.argv.slice(2)
 		process.argv = [process.argv[0], process.argv[1]]
-		var file  = Path.join(Os.homedir(), 'KwRuntime/src/kwruntime.js')
+		var file  = Path.join(Os.homedir(), 'KwRuntime/runtime/kwruntime.js')
 		
 		require(file)
 		if(oargs.length){
