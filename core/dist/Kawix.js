@@ -1594,7 +1594,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.36";
+    return "1.1.37";
   }
 
   get installer() {

@@ -141,6 +141,9 @@ let program = async function(){
             //if(useMac) return openTerminalMac()
             await kwcore.installer.selfInstall()
         }
+        else if(kwcore.$startParams["version"] !== undefined){
+            console.info("Welcome to kwruntime/core version "+ kwcore.version)
+        }
         else if(kwcore.$startParams["install-esbuild"] !== undefined){
             //if(useMac) return openTerminalMac()
             await kwcore.$installEsbuild(kwcore.$startParams["install-esbuild"])
@@ -258,7 +261,7 @@ let program = async function(){
             }
         }
         else{
-            console.info("Welcome to kwruntime/core version "+ kwcore.version)
+            //console.info("Welcome to kwruntime/core version "+ kwcore.version)
         }
     }catch(e){
         console.error(e)
