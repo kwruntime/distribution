@@ -1594,7 +1594,7 @@ class Kawix {
   }
 
   get version() {
-    return "1.1.37";
+    return "1.1.38";
   }
 
   get installer() {
@@ -2440,7 +2440,7 @@ class Kawix {
           if ((_info$moduleLoader = info.moduleLoader) !== null && _info$moduleLoader !== void 0 && _info$moduleLoader.secureRequire) {
             let tries = 0;
 
-            while (true) {
+            while (!m) {
               try {
                 m = await info.moduleLoader.secureRequire(item);
                 break;
@@ -2473,6 +2473,8 @@ class Kawix {
                   });
                 } // maybe using nodejs import?
                 else if (e.message.indexOf("require() of ES") >= 0) {
+                    tries++;
+                    if (tries > 1) throw e;
                     m = await global["import"](item.main);
                     m = this.$convertToEsModule(m);
                   } else {
@@ -2790,6 +2792,8 @@ class Kawix {
       if (!module) {
         mod = _module.default["_load"](filename, parent);
         module = _module.default["_cache"][filename];
+      } else {
+        mod = module.exports;
       }
 
       let base = {
